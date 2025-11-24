@@ -1,0 +1,52 @@
+CS 502 solution 2
+
+Question No. 1: Time Complexity of Pseudo Code
+
+Let's count how many times the print(z) command runs.
+
+1. The Inner Loop (z-loop):
+   · z starts at 8 and goes down by 2 each time: 8, 6, 4, 2.
+   · That's 4 times.
+2. The Middle Loop (y-loop):
+   · y runs from 1 to 3.
+   · That's 3 times.
+3. The Outer Loop (x-loop):
+   · x runs from 1 to n.
+   · That's n times.
+
+Total Calculation:
+To get the total,we multiply the number of times each loop runs:
+n (from x-loop) × 3 (from y-loop) × 4 (from z-loop) = 12n
+
+Final Simple Answer:
+The time complexity isO(n). This means the time it takes grows directly in proportion to n.
+
+---
+
+Question No. 2: Solving the Recurrence Relation for Heapify
+
+We are given this formula:
+T(n) = T(n/2) + c
+(Where c is a small, constant amount of work.)
+
+Let's solve it step-by-step:
+
+1. Expand the formula:
+   · T(n) = T(n/2) + c
+   · What is T(n/2)? It's T(n/4) + c. So,
+             T(n) = [T(n/4) + c] + c = T(n/4) + 2c
+   · What is T(n/4)? It's T(n/8) + c. So,
+             T(n) = [T(n/8) + c] + 2c = T(n/8) + 3c
+2. See the pattern:
+   · Every time we expand, we are cutting n in half and adding one more c.
+   · The pattern is: T(n) = T(n / 2^k) + k × c
+3. Find where it stops:
+   · The process stops when the problem size becomes 1 (n / 2^k = 1).
+   · This means 2^k = n, so k = log₂(n).
+4. Final step:
+   · Plug k = log₂(n) into the pattern:
+             T(n) = T(1) + log₂(n) × c
+   · T(1) is just a constant, so it's very small.
+
+Final Simple Answer:
+The time complexity isO(log n). This is very fast, like searching through a phone book by always cutting the search area in half.
