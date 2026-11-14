@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(void)
+{
+    int pipe1[2], pipe2[2];
+    pid_t pid;
+    char buffer[100];
+    
+    char parentMessage[] = "How are you? What's your VU ID?";
+    char childMessage[] = "I am fine. My VU ID is BC123456789"; // Replace BC123456789 with your actual VU ID
+
+    if (pipe(pipe1) == -1 || pipe(pipe2) == -1)
+    {
+        perror("Pipe creation failed");
+        return 1;
+    }
+
+    pid = fork();
+
+    if (pid < 0)
+    {
+        perror("Fork failed");
+        return 1;
+    }
+
+    if (pid > 0)
+    {
+        // Parent process
+        close(pipe1[0]); // Close reading end of pipe1
+        close(pipe2[1]); // Close writing end of pipe2
+
+        // Write message to child
+        write(pipe1[1], parentMessage, strlen(parentMessage) + 1);
+        close(pipe1[1]); // Finished writing
+
+        // Wait for child to finish writing its response
+        wait(NULL);
+
+        // Read message from child
+        read(pipe2[0], buffer, sizeof(buffer));
+        close(pipe2[0]);
+
+        printf("Parent received: %s\n", buffer);
+    }
+    else
+    {
+        // Child process
+        close(pipe1[1]); // Close writing end of pipe1
+        close(pipe2[0]); // Close reading end of pipe2
+
+        // Read message from parent
+        read(pipe1[0], buffer, sizeof(buffer));
+        close(pipe1[0]);
+
+        printf("Child received: %s\n", buffer);
+
+        // Write response back to parent
+        write(pipe2[1], childMessage, strlen(childMessage) + 1);
+        close(pipe2[1]); // Finished writing
+
+        exit(0);
+    }
+
+    return 0;
+}
